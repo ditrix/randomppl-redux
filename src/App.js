@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React,{Component} from 'react';
+import {connect} from 'react-redux'
+import axios from 'axios'
+import Person from './Person'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  
+  componentDidMount(){
+
+    axios('https://api.randomuser.me/?results=10')
+      .then(response => this.props.setData(response.data.results)) 
+      .catch(error => console.error(error))
+  }
+
+  render(){
+       return (
+        <div className="App">
+           <h1>randomppl redux</h1>
+           {(this.props.data === [])?<span>loading...</span>
+             :<ul>{this.props.data.map((item,index) => <li key={index}>{Person(item)}</li> )}</ul>
+           }
+
+      
+        </div>
+        )
+  }
 }
 
-export default App;
+const mapStateToProps = store => {
+  return {
+    data: store.data
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return{
+    setData: (data) => dispatch({type: 'LOAD_PEOPLES', payload: data})
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

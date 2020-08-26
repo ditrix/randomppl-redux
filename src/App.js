@@ -2,22 +2,24 @@ import React,{Component} from 'react';
 import {connect} from 'react-redux'
 import axios from 'axios'
 import Person from './Person'
+import {loadData} from './actions'
+
 
 class App extends Component {
   
   componentDidMount(){
-
-    axios('https://api.randomuser.me/?results=10')
-      .then(response => this.props.setData(response.data.results)) 
-      .catch(error => console.error(error))
+    this.props.loadData()
   }
+
+
 
   render(){
        return (
         <div className="App">
-           <h1>randomppl redux</h1>
-           {(this.props.data === [])?<span>loading...</span>
-             :<ul>{this.props.data.map((item,index) => <li key={index}>{Person(item)}</li> )}</ul>
+           <h1>randomppl redux only</h1>
+           {(this.props.loading)?<span>loading...</span>
+             :(this.props.error)?<span>error load data</span>
+               :<ul>{this.props.data.map((item,index) => <li key={index}>{Person(item)}</li> )}</ul>
            }
 
       
@@ -34,7 +36,8 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {
   return{
-    setData: (data) => dispatch({type: 'LOAD_PEOPLES', payload: data})
+    loadData: () => loadData(dispatch)
+  
   }
 }
 
